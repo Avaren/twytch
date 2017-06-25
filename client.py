@@ -61,7 +61,7 @@ class TwytchPubSub(websockets.client.WebSocketClientProtocol):
         print('Listening to topics {}'.format(topics))
         self.subscriptions.update(topics)
         await self.send(
-            json.dumps({'type': 'LISTEN', 'data': {"topics": topics, 'auth_token': 'kihr41ro66ri3w65v619dgn6byp0ho'}}))
+            json.dumps({'type': 'LISTEN', 'data': {"topics": topics}}))
 
     async def unlisten(self, topics):
         print('Unlistening to topics {}'.format(topics))
