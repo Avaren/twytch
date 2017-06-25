@@ -2,7 +2,7 @@ import asyncio
 import enum
 
 import websockets
-from flask import json
+import json
 
 MAX_SUBSCRIPTIONS = 5
 
@@ -44,7 +44,7 @@ class TwytchPubSub(websockets.client.WebSocketClientProtocol):
                 print('no pong')
             else:
                 print('got pong')
-            await asyncio.sleep(30)  # 5 * 60
+            await asyncio.sleep(4 * 60)
 
     async def parse_message(self, msg: str):
         msg = json.loads(msg)
@@ -60,7 +60,8 @@ class TwytchPubSub(websockets.client.WebSocketClientProtocol):
     async def listen(self, topics):
         print('Listening to topics {}'.format(topics))
         self.subscriptions.update(topics)
-        await self.send(json.dumps({'type': 'LISTEN', 'data': {"topics": topics}}))
+        await self.send(
+            json.dumps({'type': 'LISTEN', 'data': {"topics": topics, 'auth_token': 'kihr41ro66ri3w65v619dgn6byp0ho'}}))
 
     async def unlisten(self, topics):
         print('Unlistening to topics {}'.format(topics))
@@ -147,7 +148,8 @@ class Twytch:
         return conn
 
     async def _create_connection(self):
-        ws = await websockets.connect('wss://pubsub-edge.twitch.tv', loop=self.loop, klass=TwytchPubSub)
+        ws = await websockets.connect('wss://pubsub-edge.twitch.tv', loop=self.loop, origin='https://www.twitch.tv',
+                                      klass=TwytchPubSub)
         ws.dispatch = self.dispatch
         return ws
 
